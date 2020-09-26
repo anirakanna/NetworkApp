@@ -7,9 +7,17 @@
 
 struct Hero: Decodable {
     let superhero: String?
-    //let publisher: String?
-    let alter_ego: String?
-    let first_appearance: String?
-    //let characters: String?
+    let alterEgo: String?
+    let firstAppearance: String?
+    
+    init(heroData: [String: Any]) {
+        superhero = heroData["superhero"] as? String
+        alterEgo = heroData["alter_ego"] as? String
+        firstAppearance = heroData["first_appearance"] as? String
+    }
+    static func getHeroes(from value: Any) -> [Hero]? {
+        guard let coursesData = value as? [[String: Any]] else { return [] }
+        return coursesData.compactMap { Hero(heroData: $0) }
+    }
 }
 

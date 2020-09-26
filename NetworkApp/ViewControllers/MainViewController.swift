@@ -16,19 +16,27 @@ class MainViewController: UIViewController {
     
     @IBOutlet weak var imageView: UIImageView!
     
-    let network = NetworkManager()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        network.fetchImage(imageView: imageView)
+        let activityIndicator = showSpinner(in: imageView)
+        activityIndicator.startAnimating()
+        activityIndicator.hidesWhenStopped = true
+        ImageManager.shared.fetchImage { image in
+            self.imageView.image = image
+            activityIndicator.stopAnimating()
+        }
     }
     
-    // MARK: - Navigation
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let descriptionVC = segue.destination as? HeroesListTableViewController else { return }
-        descriptionVC.network.fetchHeroesList()
-    }
-    
+    private func showSpinner(in view: UIView) -> UIActivityIndicatorView {
+            let activityIndicator = UIActivityIndicatorView(style: .large)
+            activityIndicator.color = .gray
+            activityIndicator.startAnimating()
+            activityIndicator.center = view.center
+            activityIndicator.hidesWhenStopped = true
+            
+            view.addSubview(activityIndicator)
+            
+            return activityIndicator
+        }
 }

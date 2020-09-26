@@ -13,9 +13,10 @@ class TableViewCell: UITableViewCell {
     @IBOutlet weak var firstAppearance: UILabel!
     @IBOutlet weak var alterEgoLabel: UILabel!
     
-    func configure(with course: Hero) {
-        superHeroLabel.text = course.superhero ?? ""
-        firstAppearance.text = "First Appearance: \(course.first_appearance ?? "")"
-        alterEgoLabel.text = "Alter Ego: \(course.alter_ego ?? "")"
+    func configure(with hero: Hero) {
+        superHeroLabel.text = hero.superhero ?? ""
+        firstAppearance.text = "First Appearance: \(hero.firstAppearance ?? "")"
+        alterEgoLabel.text = "Alter Ego: \(hero.alterEgo ?? "")"
     }
 }
+

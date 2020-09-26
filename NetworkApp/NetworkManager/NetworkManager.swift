@@ -6,51 +6,52 @@
 //
 
 import UIKit
+import Alamofire
 
 class NetworkManager {
-    var heroes: [Hero] = []
     
-    func fetchHeroesList() {
-        guard let url = URL(string: URLExamples.urlJson.rawValue) else { return }
-        
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if let error = error {
-                print(error)
+    static let shared = NetworkManager()
+    
+    private init() {}
+    
+    func fetchHeroesList(from urlString: String, with complition: @escaping ([Hero]) -> Void) {
+        AF.request(urlString)
+            .validate()
+            .responseJSON { dataResponse in
+                switch dataResponse.result {
+                case .success(let value):
+                    let hero = Hero.getHeroes(from: value) ?? []
+                    DispatchQueue.main.async {
+                        complition(hero)
+                    }
+                case .failure(let error):
+                    print(error)
+                }
             }
-            if let response = response {
-                print(response)
-            }
-            guard let data = data else { return }
-            let jsonDecoder = JSONDecoder()
-            
-            do {
-                self.heroes = try jsonDecoder.decode([Hero].self, from: data)
-            } catch let error {
-                print(error.localizedDescription)
-            }
-        }.resume()
     }
+}
 
-     func fetchImage(imageView: UIImageView) {
-       
+class ImageManager {
+    static let shared = ImageManager()
+    
+    private init() {}
+    
+    func fetchImage(with complition: @escaping (UIImage) -> Void) {
+
         guard let imageURL = URL(string: URLExamples.urlImage.rawValue) else { return }
         
-        URLSession.shared.dataTask(with: imageURL) { (data, response, error) in
+        URLSession.shared.dataTask(with: imageURL) { (data, _, error) in
             if let error = error {
                 print(error.localizedDescription)
                 return
             }
             
-            if let response = response {
-                print(response)
-            }
-            
             if let data = data, let image = UIImage(data: data) {
                 DispatchQueue.main.async {
-                    //self.activityIndicator.stopAnimating()
-                    imageView.image = image
+                    complition(image)
                 }
             }
         }.resume()
     }
 }
+
